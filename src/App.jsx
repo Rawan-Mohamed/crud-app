@@ -1,13 +1,14 @@
-import logo from './logo.svg';
+
 import './App.css';
 import UserList from './components/UserList/UserList';
-import AddModal from './components/AddModal/AddModal';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 function App() {
   return (
     <div className="wrapper">
-      <p>rawaaaaaaaaaaan</p>
+      {/* <ToastContainer /> */}
       <UserList />
 
     </div>

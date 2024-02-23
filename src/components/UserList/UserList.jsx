@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import UserForm from './../UserForm/UserForm';
+import CustomModal from '../CustomModal/CustomModal';
 
 const UserList = () => {
     const [users, setUsers] = useState([]);
@@ -114,30 +116,26 @@ const UserList = () => {
             await axios.delete(`https://jsonplaceholder.typicode.com/users/${id}`);
             setUsers(users.filter(user => user.id !== id));
             setShowDeleteModal(false);
+
+            
         } catch (error) {
             console.log(error);
         }
     };
-    const closeModal = () => {
-        setShowAddModal(false);
-        setShowEditModal(false);
-        setShowDeleteModal(false);
-    };
-
 
     return (
-        <div className="content-wrapper">
+        <div className="p-2">
             <section className="content">
                 <div className="container-fluid">
                     <h1>Users Crud</h1>
 
                     <div className="row">
                         <div className="col-md-12">
-                            <button className="btn btn-primary mb-2" data-toggle="modal" data-target="#addModal"
+                            <button className="btn btn-primary mb-2 open-modal-btn" data-toggle="modal" data-target="#addModal"
                                 onClick={() => setShowAddModal(true)}
 
                             >
-                                Open Modal for Add
+                                Add user
                             </button>
 
                             <table className="table">
@@ -158,14 +156,19 @@ const UserList = () => {
                                             <td>{user.email}</td>
                                             <td>{user.phone}</td>
                                             <td>
-                                                <button className="btn btn-primary btn-sm mr-2" data-toggle="modal" data-target="#editModal" onClick={() => handleEdit(user)}>
-                                                    Edit
+
+                                                <button className="btn btn-warning btn-sm mr-2" data-toggle="modal" data-target="#editModal"
+                                                    onClick={() => handleEdit(user)}>
+                                                    <i className="fas fa-edit"></i>
+
                                                 </button>
-                                                <button className="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal" onClick={() => {
-                                                    setEditingUserId(user.id);
-                                                    setShowDeleteModal(true);
-                                                }}>
-                                                    Delete
+                                                <button className="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal"
+                                                    onClick={() => {
+                                                        setEditingUserId(user.id);
+                                                        setShowDeleteModal(true);
+                                                    }}>
+                                                    <i className="fas fa-trash"></i>
+
                                                 </button>
 
                                             </td>
@@ -175,138 +178,34 @@ const UserList = () => {
                             </table>
                         </div>
                     </div>
-                    {/* create */}
+
                     {/* Create Modal */}
-                    <div className={`modal ${showAddModal ? 'show' : ''}`} id="addModal" tabIndex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden={!showAddModal}>
-                        <div className="modal-dialog" role="document">
-                            <div className="modal-content">
-                                <div className="modal-header">
-                                    <h5 className="modal-title" id="addModalLabel">Add User</h5>
-                                    <button
-                                        type="button"
-                                        className="close"
-                                        aria-label="Close"
-                                        onClick={() => closeModal(false)}
-                                    >
 
-                                    </button>
-                                </div>
-                                <form onSubmit={handleCreate}>
-                                    <div className="modal-body">
-                                        <div className="form-group">
-                                            <label>Name:</label>
-                                            <input
-                                                type="text"
-                                                name="name"
-                                                className="form-control"
-                                                value={formData.name}
-                                                onChange={handleInputChange}
-                                            />
-                                            {formErrors.name && <span className="text-danger">{formErrors.name}</span>}
-                                        </div>
-                                        <div className="form-group">
-                                            <label>Email:</label>
-                                            <input
-                                                type="email"
-                                                name="email"
-                                                className="form-control"
-                                                value={formData.email}
-                                                onChange={handleInputChange}
-                                            />
-                                            {formErrors.email && <span className="text-danger">{formErrors.email}</span>}
-                                        </div>
-                                        <div className="form-group">
-                                            <label>Phone:</label>
-                                            <input
-                                                type="text"
-                                                name="phone"
-                                                className="form-control"
-                                                value={formData.phone}
-                                                onChange={handleInputChange}
-                                            />
-                                            {formErrors.phone && <span className="text-danger">{formErrors.phone}</span>}
-                                        </div>
-                                    </div>
-                                    <div className="modal-footer">
-                                        <button type="submit" className="btn btn-primary">
-                                            Add
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="btn btn-secondary"
-                                            onClick={() => setShowAddModal(false)}
-                                        >
-                                            Cancel
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-
-
+                    <CustomModal
+                        show={showAddModal}
+                        onHide={() => setShowAddModal(false)}
+                        title="Add User"
+                    >
+                        <UserForm
+                            formData={formData}
+                            handleInputChange={handleInputChange}
+                            handleSubmit={handleCreate}
+                            formErrors={formErrors}
+                        />
+                    </CustomModal>
                     {/* Edit Modal */}
-                    <div className={`modal ${showEditModal ? 'show' : ''}`} id="editModal" tabIndex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden={!showEditModal}>
-                        <div className="modal-dialog" role="document">
-                            <div className="modal-content">
-                                <div className="modal-header">
-                                    <h5 className="modal-title" id="editModalLabel">Edit User</h5>
-                                    <button type="button" className="close" aria-label="Close" onClick={() => setShowEditModal(false)}>
-                                    </button>
-                                </div>
-                                <form onSubmit={handleUpdate}>
-                                    <div className="modal-body">
-                                        <div className="form-group">
-                                            <label>Name:</label>
-                                            <input
-                                                type="text"
-                                                name="name"
-                                                className="form-control"
-                                                value={formData.name}
-                                                onChange={handleInputChange}
-                                            />
-                                            {formErrors.name && <span className="text-danger">{formErrors.name}</span>}
-                                        </div>
-                                        <div className="form-group">
-                                            <label>Email:</label>
-                                            <input
-                                                type="email"
-                                                name="email"
-                                                className="form-control"
-                                                value={formData.email}
-                                                onChange={handleInputChange}
-                                            />
-                                            {formErrors.email && <span className="text-danger">{formErrors.email}</span>}
-                                        </div>
-                                        <div className="form-group">
-                                            <label>Phone:</label>
-                                            <input
-                                                type="text"
-                                                name="phone"
-                                                className="form-control"
-                                                value={formData.phone}
-                                                onChange={handleInputChange}
-                                            />
-                                            {formErrors.phone && <span className="text-danger">{formErrors.phone}</span>}
-                                        </div>
-                                    </div>
-                                    <div className="modal-footer">
-                                        <button type="submit" className="btn btn-primary">
-                                            Update
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="btn btn-secondary"
-
-                                            onClick={() => setShowEditModal(false)}
-                                        >
-                                            Cancel
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+                    <CustomModal
+                        show={showEditModal}
+                        onHide={() => setShowEditModal(false)}
+                        title="Edit User"
+                    >
+                        <UserForm
+                            formData={formData}
+                            handleInputChange={handleInputChange}
+                            handleSubmit={handleUpdate}
+                            formErrors={formErrors}
+                        />
+                    </CustomModal>
 
                     {/* Delete Modal */}
                     <div className={`modal ${showDeleteModal ? 'show' : ''}`} id="deleteModal" tabIndex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden={!showDeleteModal}>
@@ -324,14 +223,10 @@ const UserList = () => {
                                     <button type="button" className="btn btn-danger" onClick={() => handleDelete(editingUserId)}>
                                         Delete
                                     </button>
-                                    <button
-                                        type="button"
-                                        className="btn btn-secondary"
 
-                                        onClick={() => setShowDeleteModal(false)}
-                                    >
-                                        Cancel
-                                    </button>
+                                    <button type="button" className="btn btn-secondary" data-dismiss="modal"
+                                    >Close</button>
+
                                 </div>
                             </div>
                         </div>
